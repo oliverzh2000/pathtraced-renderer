@@ -35,15 +35,6 @@ class Window {
 private:
     // Returns true if and only if all initialization succeeds. Need to clean up if it fails.
     bool init();
-
-
-    void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-
-    void mouse_callback(GLFWwindow *window, double xpos, double ypos);
-
-    void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
-
-    void processInput(GLFWwindow *window);
 };
 
 #endif // PATHTRACED_FLIGHT_SIM_WINDOW_H

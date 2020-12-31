@@ -58,7 +58,9 @@ bool Window::init() {
 }
 
 void Window::update() {
-    processInput(window);
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
 
     // Temporary background color.
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -70,32 +72,4 @@ void Window::update() {
 
 bool Window::hasClosed() {
     return glfwWindowShouldClose(window);
-}
-
-void Window::processInput(GLFWwindow *window) {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-void Window::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-}
-
-void Window::mouse_callback(GLFWwindow *window, double xpos, double ypos) {
-    if (firstMouse) {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
-
-    lastX = xpos;
-    lastY = ypos;
-}
-
-void Window::scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
 }
