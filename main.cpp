@@ -8,7 +8,7 @@
 
 
 int main() {
-    std::unique_ptr<Window> window = std::make_unique<Window>("Zhang Physically based flight simulator");
+    std::unique_ptr<MainWindow> window = std::make_unique<MainWindow>("Flight Simulator");
 
     while (!window->hasClosed()) {
         window->update();

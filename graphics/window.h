@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
-class Window {
+class MainWindow {
   private:
     std::string title;
     GLFWwindow* window;
@@ -23,8 +23,8 @@ class Window {
     float lastY;
 
   public:
-    explicit Window(const std::string &title, int scr_height = 600, int scr_width = 800, bool is_mouse_visible = true, bool is_window_resizable = false);
-    ~Window();
+    explicit MainWindow(const std::string &title, int scr_height = 600, int scr_width = 800, bool is_mouse_visible = true, bool is_window_resizable = false);
+    ~MainWindow();
 
     // One iteration of the "game render loop".
     void update();

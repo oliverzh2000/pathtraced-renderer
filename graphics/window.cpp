@@ -6,7 +6,7 @@
 #include "window.h"
 
 
-Window::Window(const std::string &title, int scr_height, int scr_width, bool is_mouse_visible, bool is_window_resizable)
+MainWindow::MainWindow(const std::string &title, int scr_height, int scr_width, bool is_mouse_visible, bool is_window_resizable)
         : title(title),
           scr_width(scr_width),
           scr_height(scr_height),
@@ -20,11 +20,11 @@ Window::Window(const std::string &title, int scr_height, int scr_width, bool is_
     }
 }
 
-Window::~Window() {
+MainWindow::~MainWindow() {
     glfwTerminate();
 }
 
-bool Window::init() {
+bool MainWindow::init() {
     // Initialize GLFW and the window settings.
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -57,7 +57,7 @@ bool Window::init() {
     return true;
 }
 
-void Window::update() {
+void MainWindow::update() {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
@@ -70,6 +70,6 @@ void Window::update() {
     glfwPollEvents();
 }
 
-bool Window::hasClosed() {
+bool MainWindow::hasClosed() {
     return glfwWindowShouldClose(window);
 }
