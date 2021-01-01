@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <memory>
-#include "window.h"
+#include "main_window.h"
 
 
 int main() {

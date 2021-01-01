@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include "window.h"
+#include "main_window.h"
 
 
 MainWindow::MainWindow(const std::string &title, int scr_height, int scr_width, bool is_mouse_visible, bool is_window_resizable)
@@ -54,6 +54,8 @@ bool MainWindow::init() {
         return false;
     }
 
+    shader = std::make_unique<Shader>("graphics/shaders/quad_renderer.vs", "graphics/shaders/quad_renderer.fs");
+
     return true;
 }
 
@@ -62,9 +64,32 @@ void MainWindow::update() {
         glfwSetWindowShouldClose(window, true);
     }
 
+
     // Temporary background color.
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    float vertices[] = {
+            -0.5f, -0.5f,
+            0.5f, -0.5f,
+            0.0f,  0.5f
+    };
+
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+    glEnableVertexAttribArray(0);
+
+    shader->use();
+
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
 
     glfwSwapBuffers(window);
     glfwPollEvents();

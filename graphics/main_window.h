@@ -2,17 +2,21 @@
 // Created by Oliver Zhang on 2020-12-28.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_WINDOW_H
-#define PATHTRACED_FLIGHT_SIM_WINDOW_H
+#ifndef PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
+#define PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <memory>
 
+#include "shader.h"
+
+// TODO: Convert to singleton class.
 class MainWindow {
-  private:
+private:
     std::string title;
-    GLFWwindow* window;
+    GLFWwindow *window;
     int scr_width, scr_height;
     bool is_mouse_visible;
     bool is_window_resizable;
@@ -22,8 +26,13 @@ class MainWindow {
     float lastX;
     float lastY;
 
-  public:
-    explicit MainWindow(const std::string &title, int scr_height = 600, int scr_width = 800, bool is_mouse_visible = true, bool is_window_resizable = false);
+    // State for drawing software rendered imaged to screen.
+    std::unique_ptr<Shader> shader;
+
+public:
+    explicit MainWindow(const std::string &title, int scr_height = 600, int scr_width = 800,
+                        bool is_mouse_visible = true, bool is_window_resizable = false);
+
     ~MainWindow();
 
     // One iteration of the "game render loop".
@@ -37,4 +46,4 @@ private:
     bool init();
 };
 
-#endif // PATHTRACED_FLIGHT_SIM_WINDOW_H
+#endif // PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H

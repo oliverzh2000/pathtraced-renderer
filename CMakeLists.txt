@@ -29,10 +29,10 @@ link_directories(
 add_executable(
         flight-sim
         main.cpp
-        graphics/window.cpp graphics/window.h
+        graphics/main_window.cpp graphics/main_window.h
         third_party/glad/src/glad.c
         camera.h
-)
+        graphics/shader.cpp graphics/shader.h graphics/quad_texture_renderer.cpp graphics/quad_texture_renderer.h)
 
 add_executable(
         imgui_demo
