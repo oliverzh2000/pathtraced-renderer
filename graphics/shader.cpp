@@ -26,11 +26,11 @@ Shader::Shader(const std::string &vertexShaderPath, const std::string &fragmentS
     std::string vertexShaderCode = vertexShaderStream.str();
     std::string fragmentShaderCode = fragmentShaderStream.str();
 
+    vertexShaderFile.close();
+    fragmentShaderFile.close();
+
     const char *vertexShaderCodeCStr = vertexShaderCode.c_str();
     const char *fragmentShaderCodeCStr = fragmentShaderCode.c_str();
-
-    std::cout << "vertexShaderCodeCstr: " << vertexShaderCodeCStr << std::endl;
-    std::cout << "fragmentShaderCodeCstr: " << fragmentShaderCodeCStr << std::endl;
 
     GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
@@ -57,24 +57,24 @@ Shader::Shader(const std::string &vertexShaderPath, const std::string &fragmentS
         throw std::runtime_error("Failed to compile fragment shader at " + fragmentShaderPath + ": " + infoLog);
     }
 
-    shaderProgramID = glCreateProgram();
-    glAttachShader(shaderProgramID, vertexShaderID);
-    glAttachShader(shaderProgramID, fragmentShaderID);
+    shader = glCreateProgram();
+    glAttachShader(shader, vertexShaderID);
+    glAttachShader(shader, fragmentShaderID);
 
-    glLinkProgram(shaderProgramID);
+    glLinkProgram(shader);
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
-    glGetShaderiv(shaderProgramID, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if(!success) {
-        glGetShaderInfoLog(shaderProgramID, 512, nullptr, infoLog);
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
         throw std::runtime_error(std::string("Failed to link shader program: ") + infoLog);
     }
 }
 
 Shader::~Shader() {
-    glDeleteProgram(shaderProgramID);
+    glDeleteProgram(shader);
 }
 
 void Shader::use() {
-    glUseProgram(shaderProgramID);
+    glUseProgram(shader);
 }

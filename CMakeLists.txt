@@ -32,7 +32,17 @@ add_executable(
         graphics/main_window.cpp graphics/main_window.h
         third_party/glad/src/glad.c
         camera.h
-        graphics/shader.cpp graphics/shader.h graphics/quad_texture_renderer.cpp graphics/quad_texture_renderer.h)
+        graphics/shader.cpp graphics/shader.h
+        graphics/quad_texture_renderer.cpp
+        graphics/quad_texture_renderer.h
+        third_party/imgui/imgui.cpp
+        third_party/imgui/imgui_demo.cpp
+        third_party/imgui/imgui_draw.cpp
+        third_party/imgui/imgui_tables.cpp
+        third_party/imgui/imgui_widgets.cpp
+        third_party/imgui/backend/imgui_impl_glfw.cpp
+        third_party/imgui/backend/imgui_impl_opengl3.cpp
+)
 
 add_executable(
         imgui_demo

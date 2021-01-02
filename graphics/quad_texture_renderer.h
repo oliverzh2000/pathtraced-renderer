@@ -10,10 +10,16 @@
 class QuadRenderer {
 private:
     Shader shader;
+    GLuint VAO;
+    GLuint texture;
+	int frameCount = 0;
 
 public:
     QuadRenderer();
-    render();
+
+    void renderRGBImage(int width, int height, unsigned char *data);
+
+	int getFrameCount() { return frameCount; };
 };
 
 

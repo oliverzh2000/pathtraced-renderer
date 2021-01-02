@@ -14,7 +14,7 @@
  */
 class Shader {
 private:
-    GLuint shaderProgramID;
+    GLuint shader;
     bool hasShaderProgram = false;
 
 public:
@@ -23,6 +23,8 @@ public:
     ~Shader();
 
     void use();
+
+    int ID() { return shader; };
 };
 
 
