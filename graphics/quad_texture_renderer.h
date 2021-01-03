@@ -17,7 +17,7 @@ private:
 public:
     QuadRenderer();
 
-    void renderRGBImage(int width, int height, unsigned char *data);
+    void renderRGBImage(int width, int height, unsigned char *data, bool isRenderingPaused);
 
 	int getFrameCount() { return frameCount; };
 };

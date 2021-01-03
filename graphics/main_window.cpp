@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <string>
 #include "main_window.h"
 
 #include "imgui.h"
@@ -127,57 +128,28 @@ void MainWindow::update() {
         glfwSetWindowShouldClose(window, true);
     }
 
-    for (int i = 0; i < img_width * img_height * 3; ++i) {
-		img_data[i] = i;
-    }
+	// Start the Dear ImGui frame
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	ImGuiIO& io = ImGui::GetIO();
 
-    quadRenderer->renderRGBImage(img_width, img_height, img_data);
+	ImGui::ShowDemoWindow(nullptr);
+	showSettingsWindow();
+	if (!isRenderingPaused) {
+		// Perform the software raytracing.
+		for (int i = 0; i < img_width * img_height * 3; ++i) {
+			img_data[i] = i + quadRenderer->getFrameCount();
+		}
+	}
 
+	// Display the software raytraced image.
+	quadRenderer->renderRGBImage(img_width, img_height, img_data, isRenderingPaused);
 
-    // Start the Dear ImGui frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-    ImGuiIO &io = ImGui::GetIO();
+	showOverlay();
 
-    // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-    //ImGui::ShowDemoWindow(nullptr);
-
-    // FIXME-VIEWPORT: Select a default viewport
-    const float DISTANCE = 10.0f;
-    static int corner = 2;
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-    if (corner != -1)
-    {
-        window_flags |= ImGuiWindowFlags_NoMove;
-        ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImVec2 work_area_pos = viewport->GetWorkPos();   // Instead of using viewport->Pos we use GetWorkPos() to avoid menu bars, if any!
-        ImVec2 work_area_size = viewport->GetWorkSize();
-        ImVec2 window_pos = ImVec2((corner & 1) ? (work_area_pos.x + work_area_size.x - DISTANCE) : (work_area_pos.x + DISTANCE), (corner & 2) ? (work_area_pos.y + work_area_size.y - DISTANCE) : (work_area_pos.y + DISTANCE));
-        ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
-        ImGui::SetNextWindowViewport(viewport->ID);
-    }
-    ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
-    if (ImGui::Begin("Example: Simple overlay", nullptr, window_flags))
-    {
-        ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-                    ImGui::GetIO().Framerate);
-        if (ImGui::BeginPopupContextWindow())
-        {
-            if (ImGui::MenuItem("Custom",       NULL, corner == -1)) corner = -1;
-            if (ImGui::MenuItem("Top-left",     NULL, corner == 0)) corner = 0;
-            if (ImGui::MenuItem("Top-right",    NULL, corner == 1)) corner = 1;
-            if (ImGui::MenuItem("Bottom-left",  NULL, corner == 2)) corner = 2;
-            if (ImGui::MenuItem("Bottom-right", NULL, corner == 3)) corner = 3;
-            ImGui::EndPopup();
-        }
-    }
-    ImGui::End();
-
-    // Rendering
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     // Update and Render additional Platform Windows
     // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
@@ -195,4 +167,85 @@ void MainWindow::update() {
 
 bool MainWindow::hasClosed() {
     return glfwWindowShouldClose(window);
+}
+
+void MainWindow::showOverlay() {
+	// FIXME-VIEWPORT: Select a default viewport
+	const float DISTANCE = 10.0f;
+	static int corner = 2;
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+	if (corner != -1)
+	{
+		window_flags |= ImGuiWindowFlags_NoMove;
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImVec2 work_area_pos = viewport->GetWorkPos();   // Instead of using viewport->Pos we use GetWorkPos() to avoid menu bars, if any!
+		ImVec2 work_area_size = viewport->GetWorkSize();
+		ImVec2 window_pos = ImVec2((corner & 1) ? (work_area_pos.x + work_area_size.x - DISTANCE) : (work_area_pos.x + DISTANCE), (corner & 2) ? (work_area_pos.y + work_area_size.y - DISTANCE) : (work_area_pos.y + DISTANCE));
+		ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		ImGui::SetNextWindowViewport(viewport->ID);
+	}
+	ImGui::SetNextWindowBgAlpha(0.7f); // Transparent background
+	if (ImGui::Begin("Overlay", nullptr, window_flags))
+	{
+		ImGui::Text("%.1f ms (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
+			ImGui::GetIO().Framerate);
+		if (ImGui::BeginPopupContextWindow())
+		{
+			if (ImGui::MenuItem("Custom", NULL, corner == -1)) corner = -1;
+			if (ImGui::MenuItem("Top-left", NULL, corner == 0)) corner = 0;
+			if (ImGui::MenuItem("Top-right", NULL, corner == 1)) corner = 1;
+			if (ImGui::MenuItem("Bottom-left", NULL, corner == 2)) corner = 2;
+			if (ImGui::MenuItem("Bottom-right", NULL, corner == 3)) corner = 3;
+			ImGui::EndPopup();
+		}
+	}
+	ImGui::End();
+}
+
+void MainWindow::showSettingsWindow() {
+	ImGui::Begin("Settings");
+
+	static int render_size_selection = 1; // image size is screen size / (2 ^ selection). This starts in half size mode. 
+
+	if (ImGui::BeginTabBar("Settings")) {
+		if (ImGui::BeginTabItem("Render")) {
+			// Image resolution arrows
+			if (ImGui::ArrowButton("##increase resolution", ImGuiDir_Up)) {
+				if (render_size_selection > 0) {
+					render_size_selection--;
+				}
+			}
+			ImGui::SameLine();
+			if (ImGui::ArrowButton("##decrease resolution", ImGuiDir_Down)) {
+				if (scr_width >> render_size_selection > 40 || scr_height >> render_size_selection > 40) {
+					render_size_selection++;
+				}
+			}
+			ImGui::SameLine();
+			ImGui::Text(("Resolution: " + std::to_string(img_width) + "x" + std::to_string(img_height)).c_str());
+
+			// Pausing rendering checkbox. 
+			ImGui::Checkbox("Rendering Paused: ", &isRenderingPaused);
+			ImGui::EndTabItem();
+		}
+
+		if (ImGui::BeginTabItem("Game")) {
+			ImGui::Text("Hello");
+			ImGui::EndTabItem();
+		}
+		ImGui::EndTabBar();
+	}
+	ImGui::End(); // Settings window.
+
+	if (!isRenderingPaused) {
+		int new_img_width = scr_width >> render_size_selection;
+		int new_img_height = scr_height >> render_size_selection;
+		if (new_img_height != img_height || new_img_width != img_width) {
+			img_width = new_img_width;
+			img_height = new_img_height;
+			delete img_data;
+			img_data = new unsigned char[img_width * img_height * 3];
+		}
+	}
 }

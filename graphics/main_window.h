@@ -17,17 +17,18 @@ class MainWindow {
 private:
     std::string title;
     GLFWwindow *window;
-    int scr_width = 2000;
-    int scr_height = 1000;
+    int scr_width = 1000;
+    int scr_height = 500;
     bool is_mouse_visible = true;
     bool is_window_resizable = false;
-	bool vsync = false;
+	bool vsync = true;
 
     // State for drawing software rendered image to screen.
-    int img_width = 2000; // Rendered image is scaled up to the screen size by the quad renderer.
-    int img_height = 1000;
+    int img_width = 200; // Rendered image is scaled up to the screen size by the quad renderer.
+    int img_height = 100;
     unsigned char *img_data;
     std::unique_ptr<QuadRenderer> quadRenderer;
+	bool isRenderingPaused = false;
 
 public:
     explicit MainWindow(const std::string &title);
@@ -43,6 +44,10 @@ public:
 private:
     // Returns true if and only if all initialization succeeds. Need to clean up if it fails.
     bool init();
+
+	void showOverlay();
+
+	void showSettingsWindow();
 };
 
 #endif // PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
