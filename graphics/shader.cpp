@@ -64,9 +64,9 @@ Shader::Shader(const std::string &vertexShaderPath, const std::string &fragmentS
     glLinkProgram(shader);
     glDeleteShader(vertexShaderID);
     glDeleteShader(fragmentShaderID);
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    glGetProgramiv(shader, GL_LINK_STATUS, &success);
     if(!success) {
-        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+        glGetProgramInfoLog(shader, 512, nullptr, infoLog);
         throw std::runtime_error(std::string("Failed to link shader program: ") + infoLog);
     }
 }
