@@ -15,6 +15,7 @@ include_directories(
         third_party/stb/include/
 
         graphics/
+        core/
         physics/
 )
 
@@ -30,12 +31,12 @@ link_directories(
 add_executable(
         flight-sim
         main.cpp
-        graphics/main_window.cpp graphics/main_window.h
+        graphics/main_window.cpp
         third_party/glad/src/glad.c
-        camera.h
-        graphics/shader.cpp graphics/shader.h
-        graphics/quad_texture_renderer.cpp
-        graphics/quad_texture_renderer.h
+        core/geometry.cpp
+        core/ray.cpp
+        graphics/shader.cpp
+        graphics/quad_renderer.cpp
         third_party/imgui/imgui.cpp
         third_party/imgui/imgui_demo.cpp
         third_party/imgui/imgui_draw.cpp
@@ -57,6 +58,7 @@ add_executable(
         third_party/imgui/backend/imgui_impl_glfw.cpp
         third_party/imgui/backend/imgui_impl_opengl3.cpp
         third_party/glad/src/glad.c
+
 )
 
 
