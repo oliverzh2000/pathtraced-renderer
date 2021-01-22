@@ -12,6 +12,7 @@ include_directories(
         third_party/glad/include/glad/
         third_party/imgui/
         third_party/imgui/backend/
+        third_party/stb/include/
 
         graphics/
         physics/
@@ -42,6 +43,7 @@ add_executable(
         third_party/imgui/imgui_widgets.cpp
         third_party/imgui/backend/imgui_impl_glfw.cpp
         third_party/imgui/backend/imgui_impl_opengl3.cpp
+        graphics/stb_image.cpp
 )
 
 add_executable(
