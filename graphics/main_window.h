@@ -9,26 +9,47 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include <memory>
+#include <vector>
 
-#include "quad_texture_renderer.h"
+#include "quad_renderer.h"
+#include "hittable_list.h"
+#include "camera.h"
 
 // TODO: Convert to singleton class.
 class MainWindow {
 private:
     std::string title;
     GLFWwindow *window;
-    int scr_width = 1000;
-    int scr_height = 500;
-    bool is_mouse_visible = true;
-    bool is_window_resizable = false;
-	bool vsync = true;
+    int screenWidth = 1600;
+    int screenHeight = 800;
+    bool isMouseVisible = true;
+    bool isWindowResizable = false;
+    bool vsync = true;
+    bool showDebugMessages = false;
 
     // State for drawing software rendered image to screen.
-    int img_width = 200; // Rendered image is scaled up to the screen size by the quad renderer.
-    int img_height = 100;
-    unsigned char *img_data;
+
+    // Hardcoded sizes such that they need to:
+    // 1) Upscale to screen size with nearest neighbor resampling (screen size is integer multiple)
+    // 2) Bytes in each line of pixel array is a multiple of 4, so that the GPU doesn't have a seizure.
+    std::vector<std::pair<int, int>> imageSizes = {{1600, 800},
+                                                   {800,  400},
+                                                   {400,  200},
+                                                   {200,  100},
+                                                   {100,  50},
+                                                   {40,   20},
+                                                   {20,   10}};
+    int imageSizeSelection = 3;
+    int fullscreenWidth, fullscreenHeight;
+    bool isFullscreen = false;
+
     std::unique_ptr<QuadRenderer> quadRenderer;
-	bool isRenderingPaused = false;
+    bool isRenderingPaused = false;
+
+    // Scene geometry.
+    HittableList world;
+    Camera camera;
+    int maxDepth = 10;
 
 public:
     explicit MainWindow(const std::string &title);
@@ -45,9 +66,13 @@ private:
     // Returns true if and only if all initialization succeeds. Need to clean up if it fails.
     bool init();
 
-	void showOverlay();
+    void showOverlay();
+    void showSettingsWindow();
 
-	void showSettingsWindow();
+    [[nodiscard]] int imgWidth() const;
+    [[nodiscard]] int imgHeight() const;
+
+    void toggleFullscreen();
 };
 
 #endif // PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H

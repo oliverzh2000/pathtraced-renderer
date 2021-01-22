@@ -44,6 +44,10 @@ add_executable(
         third_party/imgui/imgui_widgets.cpp
         third_party/imgui/backend/imgui_impl_glfw.cpp
         third_party/imgui/backend/imgui_impl_opengl3.cpp
+        graphics/hittable.cpp
+        graphics/sphere.cpp
+        graphics/hittable_list.cpp
+        graphics/camera.cpp
         graphics/stb_image.cpp
 )
 
