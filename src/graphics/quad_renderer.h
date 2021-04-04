@@ -12,15 +12,15 @@ class QuadRenderer {
 private:
     Shader shader;
     GLuint VAO;
-    GLuint texture;
+    GLuint textureID;
 	int width, height;
-    float* imgData = nullptr;
+    float* data = nullptr;
     const int bytesPerChannel = sizeof(float); // 32 bit float.
 
 public:
     const int numChannels = 3; // rgb.
-    int samplesPerPixel = 0;
     float exposure = 1.0;
+    int samplesPerPixel = 0;
 
 public:
 	QuadRenderer(int width, int height);
@@ -36,24 +36,43 @@ public:
     void render();
 
     /*
+     * Save the image data to file in the radiance HDR format.
+     */
+    void saveHdrFile();
+
+    /*
      * Reinitialize the internal pixel buffer to be the new size, if the given size is not equal to current size.
      */
 	void setSize(int newWidth, int newHeight);
 	
-	[[nodiscard]] int getWidth() const { return width; };
-	[[nodiscard]] int getHeight() const { return height; };
+	int getWidth() const { return width; };
+	int getHeight() const { return height; };
 
 	void writePixel(int row, int col, Color color);
 
 	/*
 	 * Similar to writePixel, but add instead of setting color.
+	 * This allows a progressive rendering technique analogous to a long exposure in a physical camera.
 	 */
 	void accumulatePixel(int row, int col, Color color);
+
+	/**
+	 * Increment the internal samples per pixel counter.
+	 */
+	void finishAcculumatingFrame() {
+	    samplesPerPixel++;
+	}
+
+	/*
+	 * Zero out image data array and set samples per pixel to 0.
+	 * Call this whenever scene data changes, unless of course you want to achieve a long exposure effect over multiple frames.
+	 */
+	void reset();
 
 	/*
 	 * Get a copy of the image data after division by samples per pixel.
 	 */
-	const float *scaledImgDataCopy() const;
+	const float *scaledData() const;
 };
 
 

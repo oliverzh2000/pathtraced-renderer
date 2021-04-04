@@ -5,9 +5,9 @@ in vec2 TexCoord;
 
 // texture sampler
 uniform sampler2D texture1;
-uniform float samples_per_pixel;
+uniform float pixel_divisor;
 
 void main()
 {
-	FragColor = texture(texture1, TexCoord) / samples_per_pixel;
+	FragColor = texture(texture1, TexCoord) / pixel_divisor;
 }

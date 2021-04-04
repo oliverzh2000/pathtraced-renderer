@@ -14,6 +14,7 @@ public:
     Point3<T> origin;
     Vector3<T> direction;
 
+    Ray3() : origin(), direction() {};
     Ray3(const Point3<T> &origin, const Vector3<T> &direction);
 
     Point3<T> at(T t) const;

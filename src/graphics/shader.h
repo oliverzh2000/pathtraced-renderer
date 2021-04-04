@@ -15,7 +15,6 @@
 class Shader {
 private:
     GLuint shader;
-    bool hasShaderProgram = false;
 
 public:
     Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath);

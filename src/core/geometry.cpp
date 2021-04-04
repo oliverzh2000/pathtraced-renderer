@@ -25,14 +25,19 @@ Vector3<T> Vector3<T>::operator-(const Vector3<T> &other) const {
 }
 
 template<typename T>
+Vector3<T> Vector3<T>::operator*(const Vector3<T> &other) const {
+    return Vector3(x * other.x, y * other.y, z * other.z);;
+}
+
+template<typename T>
 Vector3<T> Vector3<T>::operator*(T k) const {
     return Vector3<T>(x * k, y * k, z * k);
 }
 
 template<typename T>
 Vector3<T> Vector3<T>::operator/(T k) const {
-    T k_reciprocal = 1 / k;
-    return Vector3<T>(x * k_reciprocal, y * k_reciprocal, z * k_reciprocal);
+    T kReciprocal = 1 / k;
+    return Vector3<T>(x * kReciprocal, y * kReciprocal, z * kReciprocal);
 }
 
 template<typename T>
@@ -57,10 +62,27 @@ Vector3<T> &Vector3<T>::operator-=(const Vector3<T> &other) {
 }
 
 template<typename T>
+Vector3<T> &Vector3<T>::operator*=(const Vector3<T> &other) {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+    return *this;
+}
+
+template<typename T>
 Vector3<T> &Vector3<T>::operator*=(T k) {
     x *= k;
     y *= k;
     z *= k;
+    return *this;
+}
+
+template<typename T>
+Vector3<T> &Vector3<T>::operator/=(T k) {
+    T kReciprocal = 1 / k;
+    x *= kReciprocal;
+    y *= kReciprocal;
+    z *= kReciprocal;
     return *this;
 }
 
@@ -72,15 +94,6 @@ bool Vector3<T>::operator==(const Vector3<T> &other) const {
 template<typename T>
 bool Vector3<T>::operator!=(const Vector3<T> &other) const {
     return x != other.x || y != other.y || z != other.z;
-}
-
-template<typename T>
-Vector3<T> &Vector3<T>::operator/=(T k) {
-    T k_reciprocal = 1 / k;
-    x *= k_reciprocal;
-    y *= k_reciprocal;
-    z *= k_reciprocal;
-    return *this;
 }
 
 template<typename T>
@@ -106,18 +119,13 @@ Vector3<T> Vector3<T>::cross(const Vector3<T> &other) const {
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::unitVector() const {
+Vector3<T> Vector3<T>::normalized() const {
     return *this / length();
 }
 
 template<typename T>
-Vector3<T> Vector3<T>::random() {
-    return Vector3<T> (random_double(), random_double(), random_double());
-}
-
-template<typename T>
 Vector3<T> Vector3<T>::random(double min, double max) {
-    return Vector3<T> (random_double(min,max), random_double(min,max), random_double(min,max));
+    return Vector3<T> (randomDouble(min, max), randomDouble(min, max), randomDouble(min, max));
 }
 
 template<typename T>

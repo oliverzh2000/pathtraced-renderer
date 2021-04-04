@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include <omp.h>
 
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
@@ -16,16 +17,22 @@
 #include "util.h"
 #include "geometry.h"
 #include "ray.h"
-#include "hittable_list.h"
+#include "render_primitive_group.h"
 #include "sphere.h"
+#include "triangle.h"
 #include "camera.h"
+#include "material.h"
+#include "lambertian.h"
+#include "metal.h"
+#include "cube_map.h"
+#include "equirectangular_map.h"
 
 void error_callback(int error, const char *description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
 void GLAPIENTRY
-MessageCallback(GLenum source,
+messageCallback(GLenum source,
                 GLenum type,
                 GLuint id,
                 GLenum severity,
@@ -38,7 +45,7 @@ MessageCallback(GLenum source,
 }
 
 MainWindow::MainWindow(const std::string &title)
-        : title(title), camera(imgWidth(), imgHeight()) {
+        : title(title), camera({0, 2, -2}, 90, -10, imgWidth(), imgHeight()) {
     init();
 }
 
@@ -91,11 +98,11 @@ bool MainWindow::init() {
 
     glfwSetErrorCallback(error_callback);
     glfwSwapInterval(vsync);
-    glEnable(GL_FRAMEBUFFER_SRGB);
+//    glEnable(GL_FRAMEBUFFER_SRGB);
 
     if (showDebugMessages) {
         glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-        glDebugMessageCallback(MessageCallback, 0);
+        glDebugMessageCallback(messageCallback, 0);
     }
 
     // Setup Dear ImGui context
@@ -128,48 +135,95 @@ bool MainWindow::init() {
     quadRenderer = std::make_unique<QuadRenderer>(imgWidth(), imgHeight());
     quadRenderer->setSize(imgWidth(), imgHeight());
 
-    world.add(make_shared<Sphere>(Point3d (0,0,-1), 0.5));
-    world.add(make_shared<Sphere>(Point3d(0,-100.5,-1), 100));
+    Color red(1.0, 0.1, 0.1);
+    Color green(0.1, 1.0, 0.1);
+    Color blue(0.1, 0.1, 1.0);
+    Color yellow(1.0, 1.0, 1.0);
+    Color cyan(0.1, 1.0, 1.0);
+    Color magenta(1.0, 0.1, 1.0);
 
+    Lambertian *redMatte = new Lambertian(Color(1.0, 0.1, 0.1));
+    Lambertian *greenMatte = new Lambertian(Color(0.1, 1.0, 0.1));
+    Lambertian *blueMatte = new Lambertian(Color(0.1, 0.1, 1.0));
+    Lambertian *yellowMatte = new Lambertian(Color(1.0, 1.0, 0.1));
+    Lambertian *cyanMatte = new Lambertian(Color(0.1, 1.0, 1.0));
+    Lambertian *magentaMatte = new Lambertian(Color(1.0, 0.1, 1.0));
+    Lambertian *grayMatte = new Lambertian(Color(0.8, 0.8, 0.8));
+
+    Metal *darkMetal = new Metal(Color(0.3, 0.3, 0.3));
+    Metal *mirror = new Metal(Color(1.0, 1.0, 1.0));
+    Metal *gold = new Metal(Color(1.0, 1.0, 0.1));
+
+    world.add(std::make_unique<Sphere>(Point3d (2,0,0), 0.5, *redMatte)); // x
+    world.add(std::make_unique<Sphere>(Point3d (0,2, 0), 0.5, *greenMatte)); // y
+    world.add(std::make_unique<Sphere>(Point3d (0,0,2), 0.5, *blueMatte)); // z
+
+    world.add(std::make_unique<Sphere>(Point3d (1,3, 1), 0.2, *yellowMatte));
+    world.add(std::make_unique<Sphere>(Point3d (-2,0,0), 0.5, *magentaMatte));
+    world.add(std::make_unique<Sphere>(Point3d (0,0,-2), 0.5, *cyanMatte));
+    world.add(std::make_unique<Sphere>(Point3d (0,0,0), 0.5, *gold));
+
+    // ground.
+    world.add(std::make_unique<Sphere>(Point3d(0,-100.5,1), 100, *darkMetal));
+
+    // square mirror
+    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
+                                            Point3d(5, 4, 0),
+                                            Point3d(5, 4, 4),
+                                            *mirror));
+    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
+                                            Point3d(5, 0, 4),
+                                            Point3d(5, 4, 4),
+                                            *mirror));
+
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
+                                            Point3d(0, 0, 2),
+                                            Point3d(2, 0, 0),
+                                            *grayMatte));
+
+    lastTime = glfwGetTime();
     return true;
 }
 
-bool hit_sphere(const Point3d & center, double radius, const Ray3d& r) {
-    Vector3d oc = r.origin - center;
-    auto a = r.direction.dot(r.direction);
-    auto b = 2.0 * oc.dot(r.direction);
-    auto c = oc.dot(oc) - radius * radius;
-    auto discriminant = b * b - 4 * a * c;
-    return (discriminant > 0);
-}
 
 float sunX = 0.7;
 float sunY = 0;
 float sunZ = -1;
 float sunSize = 0.90;
+Color sunColor(1.0, 0.7, 0.1);
+float sunBrightness = 10;
 
-Color rayColor(const Ray3d & r, const Hittable& world, int depth) {
+Color skyColor1(1.0, 1.0, 1.0);
+Color skyColor2(0.5, 0.7, 1.0);
+
+//CubeMap sky = CubeMap("assets/skybox2");
+//EquirectangularMap sky = EquirectangularMap("assets/eqrect/Brooklyn_Bridge_Planks_2k.hdr");
+//EquirectangularMap sky = EquirectangularMap("assets/eqrect/hallstatt4_hd.hdr");
+//EquirectangularMap sky = EquirectangularMap("assets/eqrect/Arches_E_PineTree_3k.hdr");
+EquirectangularMap sky = EquirectangularMap("assets/eqrect/barcelona.hdr");
+
+// TODO: Right now this is still based on the starter code from peter shirley's ray tracing in a weekend.
+// This needs to be refactored into something less ugly, and needs to use real radiometric quantities.
+Color rayColor(const Ray3d & r, const RenderPrimitive& world, int depth) {
     if (depth <= 0) {
         return Color(0, 0, 0);
     }
-    HitRecord rec;
+    LightInteraction rec;
     if (world.hit(r, 0.001, infinity, rec)) {
-        Point3d target = rec.p + rec.normal + Vector3d::randomInUnitSphere();
-        return rayColor(Ray3d(rec.p, target - rec.p), world, depth - 1) * 0.9;
+        Ray3d scattered;
+        Color attenuation;
+        if (rec.material->scatter(r, rec, attenuation, scattered)) {
+            return attenuation * rayColor(scattered, world, depth-1);
+        }
+        return Color(0,0,0);
     }
-    Vector3d unit_direction = r.direction.unitVector();
-    auto t = 0.5*(unit_direction.y + 1.0);
-//    if (unit_direction.dot(Vector3d(sunX, sunY, sunZ).unitVector()) > sunSize) {
-//        return Color(20.0, 0.0, 0.0);
+//    Vector3d unit_direction = r.direction.normalized();
+//    auto t = 0.5*(unit_direction.y + 1.0);
+//    if (unit_direction.dot(Vector3d(sunX, sunY, sunZ).normalized()) > sunSize) {
+//        return sunColor * sunBrightness;
 //    }
-//    if (unit_direction.dot(Vector3d(-sunX, sunY, sunZ).unitVector()) > sunSize) {
-//        return Color(0.0, 0.0, 20.0);
-//    }
-//    if (unit_direction.dot(Vector3d(0, 1, sunZ).unitVector()) > sunSize) {
-//        return Color(1.0, 3.0, 1.0);
-//    }
-    return (Color(1.0, 1.0, 1.0) * (1 - t) + Color(0.5, 0.7, 1.0) * t);
-    return Color(0, 0, 0);
+    Color skyColor = sky.sample(r.direction);
+    return skyColor;
 }
 
 void MainWindow::toggleFullscreen() {
@@ -190,18 +244,6 @@ void MainWindow::toggleFullscreen() {
 void MainWindow::update() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
-        toggleFullscreen();
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        stbi_flip_vertically_on_write(1);
-        const float *imgData = quadRenderer->scaledImgDataCopy();
-        stbi_write_hdr("out.hdr", imgWidth(), imgHeight(), quadRenderer->numChannels, imgData);
-        delete imgData;
-    }
 
     // Start the Dear ImGui frame
     ImGui_ImplOpenGL3_NewFrame();
@@ -209,39 +251,79 @@ void MainWindow::update() {
     ImGui::NewFrame();
     ImGuiIO &io = ImGui::GetIO();
 
-    ImGui::ShowDemoWindow(nullptr);
     showSettingsWindow();
+    showOverlay();
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+    if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+        toggleFullscreen();
+    }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        quadRenderer->saveHdrFile();
+    }
+
+    double deltaTime = glfwGetTime() - lastTime;
+    lastTime = glfwGetTime();
+    if (deltaTime > maxDeltaTime) {
+        deltaTime = maxDeltaTime;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::FRONT, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::LEFT, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::BACK, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::RIGHT, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::DOWN, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        camera.movePosition(MovementDirection::UP, deltaTime);
+        shouldClearImageThisFrame = true;
+    }
+    if (!io.WantCaptureMouse) {
+        if (io.MouseDown[0]) {
+            camera.moveDirection(io.MouseDelta.x, -io.MouseDelta.y, deltaTime);
+            shouldClearImageThisFrame = true;
+        }
+        if (io.MouseWheel) {
+            camera.changeVerticalFOV(io.MouseWheel, deltaTime);
+            shouldClearImageThisFrame = true;
+        }
+    }
+
     if (!isRenderingPaused) {
-        // Image
-        double aspectRatio = double(imgWidth()) / double(imgHeight());
-
-        // Camera
-        auto viewportHeight = 2.0;
-        auto viewportWidth = aspectRatio * viewportHeight;
-        auto focal_length = 1.0;
-
-        auto origin = Point3d(0, 0, 0);
-        auto horizontal = Vector3d(viewportWidth, 0, 0);
-        auto vertical = Vector3d(0, viewportHeight, 0);
-        auto lowerLeftCorner = origin - horizontal / 2 - vertical / 2 - Vector3d(0, 0, focal_length);
-
-
+        if (shouldClearImageThisFrame) {
+            quadRenderer->reset();
+            shouldClearImageThisFrame = false;
+        }
+#pragma omp parallel for
         for (int row = 0; row < imgHeight(); ++row) {
             for (int col = 0; col < imgWidth(); ++col) {
-                double u = double(col + random_double()) / (imgWidth() - 1);
-                double v = double(row + random_double()) / (imgHeight() - 1);
-                Ray3d r = camera.getRay(u, v);
+                double x = double(col + randomDouble(0, 1)) / (imgWidth() - 1);
+                double y = double(row + randomDouble(0, 1)) / (imgHeight() - 1);
+                Ray3d r = camera.generateRay(x, y);
                 Color pixelColor = rayColor(r, world, maxDepth);
                 quadRenderer->accumulatePixel(row, col, pixelColor);
             }
         }
-        quadRenderer->samplesPerPixel++;
+        quadRenderer->finishAcculumatingFrame();
         quadRenderer->upload();
     }
     quadRenderer->render();
-
-
-    showOverlay();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -250,10 +332,10 @@ void MainWindow::update() {
     // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
     //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-        GLFWwindow *backup_current_context = glfwGetCurrentContext();
+        GLFWwindow *backupCurrentContext = glfwGetCurrentContext();
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
-        glfwMakeContextCurrent(backup_current_context);
+        glfwMakeContextCurrent(backupCurrentContext);
     }
 
     glfwSwapBuffers(window);
@@ -266,25 +348,25 @@ bool MainWindow::hasClosed() {
 
 void MainWindow::showOverlay() {
     // FIXME-VIEWPORT: Select a default viewport
-    const float DISTANCE = 10.0f;
+    const float distance = 5.0f;
     static int corner = 2;
-    ImGuiWindowFlags window_flags =
+    ImGuiWindowFlags windowFlags =
             ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize |
             ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
     if (corner != -1) {
-        window_flags |= ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoMove;
         ImGuiViewport *viewport = ImGui::GetMainViewport();
-        ImVec2 work_area_pos = viewport->GetWorkPos();   // Instead of using viewport->Pos we use GetWorkPos() to avoid menu bars, if any!
-        ImVec2 work_area_size = viewport->GetWorkSize();
-        ImVec2 window_pos = ImVec2(
-                (corner & 1) ? (work_area_pos.x + work_area_size.x - DISTANCE) : (work_area_pos.x + DISTANCE),
-                (corner & 2) ? (work_area_pos.y + work_area_size.y - DISTANCE) : (work_area_pos.y + DISTANCE));
-        ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
-        ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        ImVec2 workAreaPos = viewport->GetWorkPos();   // Instead of using viewport->Pos we use GetWorkPos() to avoid menu bars, if any!
+        ImVec2 workAreaSize = viewport->GetWorkSize();
+        ImVec2 windowPos = ImVec2(
+                (corner & 1) ? (workAreaPos.x + workAreaSize.x - distance) : (workAreaPos.x + distance),
+                (corner & 2) ? (workAreaPos.y + workAreaSize.y - distance) : (workAreaPos.y + distance));
+        ImVec2 windowPosPivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+        ImGui::SetNextWindowPos(windowPos, ImGuiCond_Always, windowPosPivot);
         ImGui::SetNextWindowViewport(viewport->ID);
     }
     ImGui::SetNextWindowBgAlpha(0.7f); // Transparent background
-    if (ImGui::Begin("Overlay", nullptr, window_flags)) {
+    if (ImGui::Begin("Overlay", nullptr, windowFlags)) {
         ImGui::Text("%.1f ms (%.1f FPS) | %d spp", 1000.0f / ImGui::GetIO().Framerate,
                     ImGui::GetIO().Framerate, quadRenderer->samplesPerPixel);
         if (ImGui::BeginPopupContextWindow()) {
@@ -323,18 +405,25 @@ void MainWindow::showSettingsWindow() {
             // Pausing rendering checkbox.
             ImGui::Checkbox("Rendering Paused: ", &isRenderingPaused);
             ImGui::EndTabItem();
+
+            ImGui::SliderFloat("exposure", &quadRenderer->exposure, 0.002f, 10.0f, "ratio = %.3f", ImGuiSliderFlags_Logarithmic);
         }
 
-        if (ImGui::BeginTabItem("Game")) {
-            ImGui::Text("Hello");
+        if (ImGui::BeginTabItem("Scene")) {
+            bool changed = false;
 
-            ImGui::SliderFloat("slider sun x", &sunX, -1.0f, 1.0f, "ratio = %.3f");
-            ImGui::SliderFloat("slider sun y", &sunY, -1.0f, 1.0f, "ratio = %.3f");
-            ImGui::SliderFloat("slider sun z", &sunZ, -1.0f, 1.0f, "ratio = %.3f");
-            ImGui::SliderFloat("slider sun size", &sunSize, 0.0f, 1.0f, "ratio = %.3f");
+            changed |= ImGui::SliderFloat("sun x", &sunX, -1.0f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+            changed |= ImGui::SliderFloat("sun y", &sunY, -1.0f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+            changed |= ImGui::SliderFloat("sun z", &sunZ, -1.0f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
+            changed |= ImGui::SliderFloat("sun size", &sunSize, 0.1f, 0.99f, "%.3f", ImGuiSliderFlags_Logarithmic);
 
-            ImGui::SliderFloat("slider exposure", &quadRenderer->exposure, 0.01f, 10.0f, "ratio = %.3f");
+            changed |= ImGui::ColorPicker3("sum color", &sunColor.x, ImGuiColorEditFlags_HDR);
+            changed |= ImGui::SliderFloat("sun brightness", &sunBrightness, 0.1f, 250.0f, "%.3f", ImGuiSliderFlags_Logarithmic);
 
+            changed |= ImGui::ColorPicker3("sky color 1", &skyColor1.x, ImGuiColorEditFlags_HDR);
+            changed |= ImGui::ColorPicker3("sky color 2", &skyColor2.x, ImGuiColorEditFlags_HDR);
+
+            shouldClearImageThisFrame |= changed;
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
