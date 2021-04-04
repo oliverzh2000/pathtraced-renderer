@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.10)
-project(pathtraced-flight-sim)
+cmake_minimum_required(VERSION 3.14)
+project(pathtraced-flight-sim VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 include_directories(
@@ -13,47 +14,38 @@ include_directories(
         third_party/imgui/
         third_party/imgui/backend/
         third_party/stb/include/
+        third_party/catch2/
 
-        graphics/
-        core/
-        physics/
+        src/graphics/
+        src/core/
+        src/physics/
 )
 
-add_subdirectory(
-        third_party/GLFW/glfw-3.3.2
-)
 
-link_directories(
-        third_party/GLFW/build/src/RelWithDebInfo/
-        third_party/imgui/
-)
+add_subdirectory(third_party/GLFW/glfw-3.3.2)
 
 add_executable(
         flight-sim
         main.cpp
-        graphics/main_window.cpp
+        src/graphics/main_window.cpp
         third_party/glad/src/glad.c
-        core/geometry.cpp
-        core/ray.cpp
-        graphics/shader.cpp
-        graphics/quad_renderer.cpp
-        third_party/imgui/imgui.cpp
-        third_party/imgui/imgui_demo.cpp
-        third_party/imgui/imgui_draw.cpp
-        third_party/imgui/imgui_tables.cpp
-        third_party/imgui/imgui_widgets.cpp
-        third_party/imgui/backend/imgui_impl_glfw.cpp
-        third_party/imgui/backend/imgui_impl_opengl3.cpp
-        graphics/hittable.cpp
-        graphics/sphere.cpp
-        graphics/hittable_list.cpp
-        graphics/camera.cpp
-        graphics/stb_image.cpp
 )
+
+add_executable(
+        test
+        test/tests_main.cpp
+        test/quadratic_solver_test.cpp
+        test/vector_test.cpp
+        test/bound_test.cpp)
 
 add_executable(
         imgui_demo
         third_party/imgui/example/main.cpp
+        third_party/glad/src/glad.c
+)
+
+add_library(
+        imgui_lib
         third_party/imgui/imgui.cpp
         third_party/imgui/imgui_demo.cpp
         third_party/imgui/imgui_draw.cpp
@@ -61,11 +53,30 @@ add_executable(
         third_party/imgui/imgui_widgets.cpp
         third_party/imgui/backend/imgui_impl_glfw.cpp
         third_party/imgui/backend/imgui_impl_opengl3.cpp
-        third_party/glad/src/glad.c
-
 )
 
+add_library(
+        flight-sim_lib
+        src/core/geometry.cpp
+        src/core/ray.cpp
+        src/graphics/shader.cpp
+        src/graphics/quad_renderer.cpp
+        src/graphics/sphere.cpp
+        src/graphics/render_primitive_group.cpp
+        src/graphics/camera.cpp
+        src/graphics/stb_image.cpp
+        src/graphics/lambertian.cpp
+        src/graphics/metal.cpp
+        src/graphics/light_interaction.cpp
+        src/graphics/texture.cpp
+        src/graphics/cube_map.cpp
+        src/graphics/equirectangular_map.cpp
+        src/graphics/triangle.cpp
+        src/core/matrix.cpp
+        src/core/quadratic_solver.h
+        src/core/bound.cpp src/core/bound.h)
 
-target_link_libraries(flight-sim glfw)
-target_link_libraries(imgui_demo glfw)
-
+find_package(OpenMP)
+target_link_libraries(flight-sim glfw imgui_lib flight-sim_lib  OpenMP::OpenMP_CXX)
+target_link_libraries(test flight-sim_lib)
+target_link_libraries(imgui_demo glfw imgui_lib)

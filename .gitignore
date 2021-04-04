@@ -33,6 +33,7 @@
 
 # Directories
 cmake-build-debug/
+cmake-build-relwithdebinfo/
 out/
 .vs/
 .idea/
@@ -40,3 +41,4 @@ out/
 # misc
 imgui.ini
 imgui_log.txt
+cmake-build-relwithdebinfo/CMakeFiles/imgui_demo.dir/linklibs.rsp
