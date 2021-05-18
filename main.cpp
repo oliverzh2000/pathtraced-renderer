@@ -8,7 +8,7 @@
 
 
 int main() {
-    std::unique_ptr<MainWindow> window = std::make_unique<MainWindow>("Flight Simulator");
+    std::unique_ptr<MainWindow> window = std::make_unique<MainWindow>("Pathtraced Renderer");
 
     while (!window->hasClosed()) {
         window->update();
