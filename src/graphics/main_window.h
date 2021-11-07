@@ -46,7 +46,7 @@ private:
                                                    {100,  100},
                                                    {40,   40},
                                                    {20,   20}};
-    int imageSizeSelection = 3;
+    int imageSizeSelection = 2;
     int fullscreenWidth, fullscreenHeight;
     bool isFullscreen = false;
 

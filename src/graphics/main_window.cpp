@@ -26,6 +26,7 @@
 #include "metal.h"
 #include "cube_map.h"
 #include "equirectangular_map.h"
+#include "triangle_mesh.h"
 
 void error_callback(int error, const char *description) {
     fprintf(stderr, "Error: %s\n", description);
@@ -149,47 +150,97 @@ bool MainWindow::init() {
     Lambertian *cyanMatte = new Lambertian(Color(0.1, 1.0, 1.0));
     Lambertian *magentaMatte = new Lambertian(Color(1.0, 0.1, 1.0));
     Lambertian *grayMatte = new Lambertian(Color(0.8, 0.8, 0.8));
+    Lambertian *whiteMatte = new Lambertian(Color(0.99, 0.99, 0.99));
 
     Metal *darkMetal = new Metal(Color(0.3, 0.3, 0.3));
     Metal *mirror = new Metal(Color(1.0, 1.0, 1.0));
     Metal *gold = new Metal(Color(1.0, 1.0, 0.1));
 
-    world.add(std::make_unique<Sphere>(Point3d (2,0,0), 0.5, *redMatte)); // x
-    world.add(std::make_unique<Sphere>(Point3d (0,2, 0), 0.5, *greenMatte)); // y
-    world.add(std::make_unique<Sphere>(Point3d (0,0,2), 0.5, *blueMatte)); // z
-
-    world.add(std::make_unique<Sphere>(Point3d (1,3, 1), 0.2, *yellowMatte));
-    world.add(std::make_unique<Sphere>(Point3d (-2,0,0), 0.5, *magentaMatte));
-    world.add(std::make_unique<Sphere>(Point3d (0,0,-2), 0.5, *cyanMatte));
-    world.add(std::make_unique<Sphere>(Point3d (0,0,0), 0.5, *gold));
+//    world.add(std::make_unique<Sphere>(Point3d (2,0,0), 0.5, *redMatte)); // x
+//    world.add(std::make_unique<Sphere>(Point3d (0,2, 0), 0.5, *greenMatte)); // y
+//    world.add(std::make_unique<Sphere>(Point3d (0,0,2), 0.5, *blueMatte)); // z
+//
+//    world.add(std::make_unique<Sphere>(Point3d (1,3, 1), 0.2, *yellowMatte));
+//    world.add(std::make_unique<Sphere>(Point3d (-2,0,0), 0.5, *magentaMatte));
+//    world.add(std::make_unique<Sphere>(Point3d (0,0,-2), 0.5, *cyanMatte));
+//    world.add(std::make_unique<Sphere>(Point3d (0,0,0), 0.5, *gold));
 
     // ground.
     world.add(std::make_unique<Sphere>(Point3d(0,-100.5,1), 100, *darkMetal));
-
-    // square mirror
-    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
-                                            Point3d(5, 4, 0),
-                                            Point3d(5, 4, 4),
-                                            *mirror));
-    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
-                                            Point3d(5, 0, 4),
-                                            Point3d(5, 4, 4),
-                                            *mirror));
+//
+//    // square mirror
+//    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
+//                                            Point3d(5, 4, 0),
+//                                            Point3d(5, 4, 4),
+//                                            *mirror));
+//    world.add(std::make_unique<Triangle<double>>(Point3d(5, 0, 0),
+//                                            Point3d(5, 0, 4),
+//                                            Point3d(5, 4, 4),
+//                                            *mirror));
 
     world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
                                             Point3d(0, 0, 2),
                                             Point3d(2, 0, 0),
-                                            *grayMatte));
+                                            *whiteMatte));
+    world.add(std::make_unique<Triangle<double>>(Point3d(2, 0, 2),
+                                                 Point3d(0, 0, 2),
+                                                 Point3d(2, 0, 0),
+                                                 *whiteMatte));
+
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
+                                                 Point3d(0, 0, 2),
+                                                 Point3d(0, 2, 2),
+                                                 *redMatte));
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
+                                                 Point3d(0, 2, 0),
+                                                 Point3d(0, 2, 2),
+                                                 *redMatte));
+
+    world.add(std::make_unique<Triangle<double>>(Point3d(2, 0, 0),
+                                                 Point3d(2, 0, 2),
+                                                 Point3d(2, 2, 2),
+                                                 *blueMatte));
+    world.add(std::make_unique<Triangle<double>>(Point3d(2, 0, 0),
+                                                 Point3d(2, 2, 0),
+                                                 Point3d(2, 2, 2),
+                                                 *blueMatte));
+
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 2, 0),
+                                                 Point3d(0, 2, 2),
+                                                 Point3d(2, 2, 0),
+                                                 *whiteMatte));
+    world.add(std::make_unique<Triangle<double>>(Point3d(2, 2, 2),
+                                                 Point3d(0, 2, 2),
+                                                 Point3d(2, 2, 0),
+                                                 *whiteMatte));
+
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
+                                                 Point3d(0, 2, 0),
+                                                 Point3d(2, 2, 0),
+                                                 *grayMatte));
+    world.add(std::make_unique<Triangle<double>>(Point3d(0, 0, 0),
+                                                 Point3d(2, 0, 0),
+                                                 Point3d(2, 2, 0),
+                                                 *grayMatte));
+
+
+    world.add(std::make_unique<Sphere>(Point3d (0.5,0.3,0.5), 0.3, *greenMatte)); // x
+    world.add(std::make_unique<Sphere>(Point3d (1,0.3, 1), 0.3, *mirror)); // y
+    world.add(std::make_unique<Sphere>(Point3d (1.5, 0.3, 1.5), 0.3, *magentaMatte)); // z
+
 
     lastTime = glfwGetTime();
+
+//    TriangleMesh mesh("assets/models/legoman/lego obj.obj");
+
     return true;
 }
 
 
-float sunX = 0.7;
-float sunY = 0;
-float sunZ = -1;
-float sunSize = 0.90;
+float sunX = 0.0;
+float sunY = 0.026;
+float sunZ = 0.031;
+float sunSize = 0.975;
 Color sunColor(1.0, 0.7, 0.1);
 float sunBrightness = 10;
 
@@ -217,11 +268,11 @@ Color rayColor(const Ray3d & r, const RenderPrimitive& world, int depth) {
         }
         return Color(0,0,0);
     }
-//    Vector3d unit_direction = r.direction.normalized();
-//    auto t = 0.5*(unit_direction.y + 1.0);
-//    if (unit_direction.dot(Vector3d(sunX, sunY, sunZ).normalized()) > sunSize) {
-//        return sunColor * sunBrightness;
-//    }
+    Vector3d unit_direction = r.direction.normalized();
+    auto t = 0.5*(unit_direction.y + 1.0);
+    if (unit_direction.dot(Vector3d(sunX, sunY, sunZ).normalized()) > sunSize) {
+        return sunColor * sunBrightness;
+    }
     Color skyColor = sky.sample(r.direction);
     return skyColor;
 }
@@ -310,7 +361,7 @@ void MainWindow::update() {
             quadRenderer->reset();
             shouldClearImageThisFrame = false;
         }
-#pragma omp parallel for
+//#pragma omp parallel for
         for (int row = 0; row < imgHeight(); ++row) {
             for (int col = 0; col < imgWidth(); ++col) {
                 double x = double(col + randomDouble(0, 1)) / (imgWidth() - 1);

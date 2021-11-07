@@ -5,6 +5,7 @@
 #ifndef PATHTRACED_FLIGHT_SIM_BOUND_H
 #define PATHTRACED_FLIGHT_SIM_BOUND_H
 
+#include "geometry.h"
 
 /**
  * Holds a min, max value for each dimension.
@@ -20,6 +21,18 @@ public:
     bool contains(T x) {
         return min < x && x < max;
     }
+};
+
+template <typename T>
+class Bound3 {
+    Point3<T> min;
+    Point3<T> max;
+
+    Bound3(Point3<T> min, Point3<T> max);
+
+    bool contains(Point3<T> x);
+
+    Bound3<T> unionBound(const Bound3<T> other);
 };
 
 typedef Bound1<double> Bound1d;

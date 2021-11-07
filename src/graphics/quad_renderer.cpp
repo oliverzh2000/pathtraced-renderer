@@ -66,8 +66,19 @@ void QuadRenderer::saveHdrFile() {
     stbi_flip_vertically_on_write(1);
     const float *dataCopy = scaledData();
     stbi_write_hdr("out.hdr", width, height, numChannels, dataCopy);
+    stbi_write_jpg("out.jpg", width, height, numChannels, dataCopy, 90);
     delete data;
 }
+
+
+
+//#ifndef STBI_WRITE_NO_STDIO
+//STBIWDEF int stbi_write_png(char const *filename, int w, int h, int comp, const void  *data, int stride_in_bytes);
+//STBIWDEF int stbi_write_bmp(char const *filename, int w, int h, int comp, const void  *data);
+//STBIWDEF int stbi_write_tga(char const *filename, int w, int h, int comp, const void  *data);
+//STBIWDEF int stbi_write_hdr(char const *filename, int w, int h, int comp, const float *data);
+//STBIWDEF int stbi_write_jpg(char const *filename, int x, int y, int comp, const void  *data, int quality);
+
 
 void QuadRenderer::setSize(int newWidth, int newHeight) {
     if ((newWidth * numChannels * bytesPerChannel) % 4 != 0) {	
