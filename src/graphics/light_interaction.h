@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-31.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_LIGHT_INTERACTION_H
-#define PATHTRACED_FLIGHT_SIM_LIGHT_INTERACTION_H
+#ifndef PATHTRACED_RENDERER_LIGHT_INTERACTION_H
+#define PATHTRACED_RENDERER_LIGHT_INTERACTION_H
 
 #include "geometry.h"
 #include "ray.h"
@@ -21,4 +21,4 @@ struct LightInteraction {
     void setHitNormal(const Ray3d &incidentRay, const Vector3d &outwardNormal);
 };
 
-#endif //PATHTRACED_FLIGHT_SIM_LIGHT_INTERACTION_H
+#endif //PATHTRACED_RENDERER_LIGHT_INTERACTION_H

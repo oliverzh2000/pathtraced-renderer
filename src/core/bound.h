@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-04-02.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_BOUND_H
-#define PATHTRACED_FLIGHT_SIM_BOUND_H
+#ifndef PATHTRACED_RENDERER_BOUND_H
+#define PATHTRACED_RENDERER_BOUND_H
 
 #include "geometry.h"
 
@@ -39,4 +39,4 @@ typedef Bound1<double> Bound1d;
 
 // TODO: Bound2, Bound3, and have them do set operations, intersection with ray, etc.
 
-#endif //PATHTRACED_FLIGHT_SIM_BOUND_H
+#endif //PATHTRACED_RENDERER_BOUND_H

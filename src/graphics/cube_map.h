@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-03-13.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_CUBE_MAP_H
-#define PATHTRACED_FLIGHT_SIM_CUBE_MAP_H
+#ifndef PATHTRACED_RENDERER_CUBE_MAP_H
+#define PATHTRACED_RENDERER_CUBE_MAP_H
 
 #include <vector>
 #include <string>
@@ -35,4 +35,4 @@ public:
 };
 
 
-#endif //PATHTRACED_FLIGHT_SIM_CUBE_MAP_H
+#endif //PATHTRACED_RENDERER_CUBE_MAP_H

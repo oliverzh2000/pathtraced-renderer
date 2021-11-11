@@ -42,3 +42,4 @@ out/
 imgui.ini
 imgui_log.txt
 cmake-build-relwithdebinfo/CMakeFiles/imgui_demo.dir/linklibs.rsp
+third_party/assimp*

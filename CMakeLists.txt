@@ -14,22 +14,13 @@ include_directories(
         third_party/imgui/backend/
         third_party/stb/include/
         third_party/catch2/
-        third_party/assimp-5.0.1/include/
-        third_party/assimp-5.0.1/build/include/
 
         src/graphics/
         src/core/
         src/physics/
 )
 
-#link_directories(
-#        third_party/assimp-5.0.1/build/code/Release
-#        third_party/assimp-5.0.1/lib/RelWithDebInfo
-#        third_party/assimp-5.0.1/bin/RelWithDebInfo
-#)
-
 add_subdirectory(third_party/GLFW/glfw-3.3.2)
-#add_subdirectory(third_party/assimp-5.0.1)
 
 add_executable(
         renderer
@@ -84,14 +75,9 @@ add_library(
         src/core/quadratic_solver.h
         src/core/bound.cpp
         src/core/bound.h
-#        src/graphics/triangle_mesh.cpp
-#        src/graphics/triangle_mesh.h
-#        src/graphics/model_loader.cpp
-#        src/graphics/model_loader.h
 )
 
 find_package(OpenMP)
-#target_link_libraries(renderer_lib assimp)
 target_link_libraries(renderer glfw imgui_lib OpenMP::OpenMP_CXX renderer_lib)
 target_link_libraries(test renderer_lib)
 target_link_libraries(imgui_demo glfw imgui_lib)

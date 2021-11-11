@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-25.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_LAMBERTIAN_H
-#define PATHTRACED_FLIGHT_SIM_LAMBERTIAN_H
+#ifndef PATHTRACED_RENDERER_LAMBERTIAN_H
+#define PATHTRACED_RENDERER_LAMBERTIAN_H
 
 #include "material.h"
 #include "geometry.h"
@@ -22,4 +22,4 @@ public:
 };
 
 
-#endif //PATHTRACED_FLIGHT_SIM_LAMBERTIAN_H
+#endif //PATHTRACED_RENDERER_LAMBERTIAN_H

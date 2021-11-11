@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2020-12-28.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
-#define PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
+#ifndef PATHTRACED_RENDERER_MAIN_WINDOW_H
+#define PATHTRACED_RENDERER_MAIN_WINDOW_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -88,4 +88,4 @@ private:
     void toggleFullscreen();
 };
 
-#endif // PATHTRACED_FLIGHT_SIM_MAIN_WINDOW_H
+#endif // PATHTRACED_RENDERER_MAIN_WINDOW_H

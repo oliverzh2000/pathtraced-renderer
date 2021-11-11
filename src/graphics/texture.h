@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-03-13.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_TEXTURE_H
-#define PATHTRACED_FLIGHT_SIM_TEXTURE_H
+#ifndef PATHTRACED_RENDERER_TEXTURE_H
+#define PATHTRACED_RENDERER_TEXTURE_H
 
 #include <string>
 
@@ -48,4 +48,4 @@ public:
 };
 
 
-#endif //PATHTRACED_FLIGHT_SIM_TEXTURE_H
+#endif //PATHTRACED_RENDERER_TEXTURE_H

@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-10.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_GEOMETRY_H
-#define PATHTRACED_FLIGHT_SIM_GEOMETRY_H
+#ifndef PATHTRACED_RENDERER_GEOMETRY_H
+#define PATHTRACED_RENDERER_GEOMETRY_H
 
 #include <iostream>
 
@@ -83,4 +83,4 @@ typedef Vector3<int> Point3i;
 
 typedef Vector3<float> Color;
 
-#endif //PATHTRACED_FLIGHT_SIM_GEOMETRY_H
+#endif //PATHTRACED_RENDERER_GEOMETRY_H

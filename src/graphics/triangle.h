@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-03-15.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_TRIANGLE_H
-#define PATHTRACED_FLIGHT_SIM_TRIANGLE_H
+#ifndef PATHTRACED_RENDERER_TRIANGLE_H
+#define PATHTRACED_RENDERER_TRIANGLE_H
 
 #include "geometry.h"
 #include "ray.h"
@@ -34,4 +34,4 @@ public:
 
 
 
-#endif //PATHTRACED_FLIGHT_SIM_TRIANGLE_H
+#endif //PATHTRACED_RENDERER_TRIANGLE_H

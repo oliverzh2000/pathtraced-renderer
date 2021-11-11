@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-25.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_METAL_H
-#define PATHTRACED_FLIGHT_SIM_METAL_H
+#ifndef PATHTRACED_RENDERER_METAL_H
+#define PATHTRACED_RENDERER_METAL_H
 
 #include "material.h"
 #include "geometry.h"
@@ -21,4 +21,4 @@ public:
     bool scatter(const Ray3d & incidentRay, const LightInteraction& rec, Color& attenuation, Ray3d& scatteredRay) const override;
 };
 
-#endif //PATHTRACED_FLIGHT_SIM_METAL_H
+#endif //PATHTRACED_RENDERER_METAL_H

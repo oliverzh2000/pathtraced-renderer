@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2020-12-31.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_SHADER_H
-#define PATHTRACED_FLIGHT_SIM_SHADER_H
+#ifndef PATHTRACED_RENDERER_SHADER_H
+#define PATHTRACED_RENDERER_SHADER_H
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -28,4 +28,4 @@ public:
 };
 
 
-#endif //PATHTRACED_FLIGHT_SIM_SHADER_H
+#endif //PATHTRACED_RENDERER_SHADER_H

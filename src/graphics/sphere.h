@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-16.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_SPHERE_H
-#define PATHTRACED_FLIGHT_SIM_SPHERE_H
+#ifndef PATHTRACED_RENDERER_SPHERE_H
+#define PATHTRACED_RENDERER_SPHERE_H
 
 
 #include <utility>
@@ -24,4 +24,4 @@ public:
     bool hit(const Ray3d &incidentRay, double tMin, double tMax, LightInteraction &interaction) const override;
 };
 
-#endif //PATHTRACED_FLIGHT_SIM_SPHERE_H
+#endif //PATHTRACED_RENDERER_SPHERE_H

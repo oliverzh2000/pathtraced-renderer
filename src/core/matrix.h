@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-03-15.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_MATRIX_H
-#define PATHTRACED_FLIGHT_SIM_MATRIX_H
+#ifndef PATHTRACED_RENDERER_MATRIX_H
+#define PATHTRACED_RENDERER_MATRIX_H
 
 #include "geometry.h"
 
@@ -29,4 +29,4 @@ public:
 
 
 
-#endif //PATHTRACED_FLIGHT_SIM_MATRIX_H
+#endif //PATHTRACED_RENDERER_MATRIX_H

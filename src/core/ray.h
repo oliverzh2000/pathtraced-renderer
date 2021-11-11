@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-10.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_RAY_H
-#define PATHTRACED_FLIGHT_SIM_RAY_H
+#ifndef PATHTRACED_RENDERER_RAY_H
+#define PATHTRACED_RENDERER_RAY_H
 
 #include "geometry.h"
 
@@ -23,4 +23,4 @@ public:
 typedef Ray3<double> Ray3d;
 
 
-#endif //PATHTRACED_FLIGHT_SIM_RAY_H
+#endif //PATHTRACED_RENDERER_RAY_H

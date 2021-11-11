@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-16.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_UTIL_H
-#define PATHTRACED_FLIGHT_SIM_UTIL_H
+#ifndef PATHTRACED_RENDERER_UTIL_H
+#define PATHTRACED_RENDERER_UTIL_H
 
 #include <cmath>
 #include <limits>
@@ -24,4 +24,4 @@ inline double randomDouble(double min, double max) {
     return min + (max - min) * distribution(generator);
 }
 
-#endif //PATHTRACED_FLIGHT_SIM_UTIL_H
+#endif //PATHTRACED_RENDERER_UTIL_H

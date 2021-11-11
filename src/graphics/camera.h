@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2021-01-16.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_CAMERA_H
-#define PATHTRACED_FLIGHT_SIM_CAMERA_H
+#ifndef PATHTRACED_RENDERER_CAMERA_H
+#define PATHTRACED_RENDERER_CAMERA_H
 
 
 #include "util.h"
@@ -143,4 +143,4 @@ private:
     }
 };
 
-#endif //PATHTRACED_FLIGHT_SIM_CAMERA_H
+#endif //PATHTRACED_RENDERER_CAMERA_H

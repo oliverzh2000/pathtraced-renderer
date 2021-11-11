@@ -2,8 +2,8 @@
 // Created by Oliver Zhang on 2020-12-31.
 //
 
-#ifndef PATHTRACED_FLIGHT_SIM_QUAD_RENDERER_H
-#define PATHTRACED_FLIGHT_SIM_QUAD_RENDERER_H
+#ifndef PATHTRACED_RENDERER_QUAD_RENDERER_H
+#define PATHTRACED_RENDERER_QUAD_RENDERER_H
 
 #include "shader.h"
 #include "geometry.h"
@@ -76,4 +76,4 @@ public:
 };
 
 
-#endif //PATHTRACED_FLIGHT_SIM_QUAD_RENDERER_H
+#endif //PATHTRACED_RENDERER_QUAD_RENDERER_H
