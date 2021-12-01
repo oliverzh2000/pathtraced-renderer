@@ -63,18 +63,21 @@ add_library(
         src/graphics/sphere.cpp
         src/graphics/render_primitive_group.cpp
         src/graphics/camera.cpp
+        src/graphics/fps_counter.cpp
         src/graphics/stb_image.cpp
         src/graphics/lambertian.cpp
+        src/graphics/lambertian_emitter.cpp
         src/graphics/metal.cpp
         src/graphics/light_interaction.cpp
+        src/graphics/Light.cpp
         src/graphics/texture.cpp
         src/graphics/cube_map.cpp
         src/graphics/equirectangular_map.cpp
         src/graphics/triangle.cpp
+        src/graphics/triangle_mesh.cpp
         src/core/matrix.cpp
         src/core/quadratic_solver.h
         src/core/bound.cpp
-        src/core/bound.h
 )
 
 find_package(OpenMP)

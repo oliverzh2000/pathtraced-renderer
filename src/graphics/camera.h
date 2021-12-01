@@ -44,8 +44,8 @@ private:
 
     // Camera movement options
     const double maxPitch = 89.9;
-    double movementSpeed = 2.5;
-    double mouseSensitivity = 3.0;
+    double movementSpeed = 4.5;
+    double mouseSensitivity = 7.0;
     double fovSensitivity = 300.0;
     double minVerticalFOV = 25;
     double maxVerticalFOV = 140;

@@ -5,6 +5,7 @@
 #ifndef PATHTRACED_RENDERER_QUAD_RENDERER_H
 #define PATHTRACED_RENDERER_QUAD_RENDERER_H
 
+
 #include "shader.h"
 #include "geometry.h"
 
@@ -57,11 +58,9 @@ public:
 	void accumulatePixel(int row, int col, Color color);
 
 	/**
-	 * Increment the internal samples per pixel counter.
+	 * Increment the internal samples per pixel counter by n.
 	 */
-	void finishAcculumatingFrame() {
-	    samplesPerPixel++;
-	}
+    void finishAccumulatingFrames(int n);
 
 	/*
 	 * Zero out image data array and set samples per pixel to 0.

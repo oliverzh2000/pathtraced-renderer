@@ -109,6 +109,10 @@ void QuadRenderer::accumulatePixel(int row, int col, Color color) {
     data[startIndex + 2] += color.z;
 }
 
+void QuadRenderer::finishAccumulatingFrames(int n=1) {
+    samplesPerPixel += n;
+}
+
 void QuadRenderer::reset() {
     int size = width * height * numChannels;
     for (int i = 0; i < size; ++i) {
@@ -130,4 +134,3 @@ const float *QuadRenderer::scaledData() const {
     }
     return imgDataCopy;
 }
-

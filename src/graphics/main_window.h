@@ -14,8 +14,10 @@
 #include "quad_renderer.h"
 #include "render_primitive_group.h"
 #include "camera.h"
+#include "fps_counter.h"
+#include "Light.hpp"
 
-// TODO: Convert to singleton class.
+
 class MainWindow {
 private:
     std::string title;
@@ -46,8 +48,9 @@ private:
                                                    {100,  100},
                                                    {40,   40},
                                                    {20,   20}};
-    int imageSizeSelection = 2;
+    int imageSizeSelection = 4;
     int fullscreenWidth, fullscreenHeight;
+    int tilesPerDim = 8;
     bool isFullscreen = false;
 
     std::unique_ptr<QuadRenderer> quadRenderer;
@@ -57,25 +60,31 @@ private:
 
     // Scene geometry.
     RenderPrimitiveGroup world;
+    std::vector<Light> lights;
     Camera camera;
     int maxDepth = 50;
 
-    // Time state.
+    // Time state for controls.
     double lastTime;
     const double maxDeltaTime = 0.1; // seconds.
+
+    // Performance stats
+    FPSCounter fpsCounter = FPSCounter(120, 1);
 
 public:
     explicit MainWindow(const std::string &title);
 
     ~MainWindow();
 
+    void run();
+
+private:
     // One iteration of the "game render loop".
     void update();
 
     // Return true if and only if the user has closed the window.
     bool hasClosed();
 
-private:
     // Returns true if and only if all initialization succeeds. Need to clean up if it fails.
     bool init();
 

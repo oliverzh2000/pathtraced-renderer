@@ -9,12 +9,15 @@
 #include "geometry.h"
 #include "ray.h"
 
+
 struct LightInteraction;
 
 class Material {
 public:
     // TODO: Need to use proper radiometric quantities than just "attenuation"
-    virtual bool scatter(const Ray3d& incidentRay, const LightInteraction& interaction, Color& attenuation, Ray3d& scatteredRay) const = 0;
+    virtual bool
+    scatter(const Ray3d &incidentRay, const LightInteraction &interaction, Color &attenuation, Ray3d &scatteredRay,
+            Color &emission) const = 0;
 };
 
 

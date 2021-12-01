@@ -9,10 +9,7 @@
 
 int main() {
     std::unique_ptr<MainWindow> window = std::make_unique<MainWindow>("Pathtraced Renderer");
-
-    while (!window->hasClosed()) {
-        window->update();
-    }
+    window->run();
 
     return 0;
 }

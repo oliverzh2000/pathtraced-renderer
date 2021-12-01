@@ -18,7 +18,8 @@ private:
 public:
     explicit Metal(const Color& albedo) : albedo(albedo) {}
 
-    bool scatter(const Ray3d & incidentRay, const LightInteraction& rec, Color& attenuation, Ray3d& scatteredRay) const override;
+    bool scatter(const Ray3d &incidentRay, const LightInteraction &rec, Color &attenuation, Ray3d &scatteredRay,
+                 Color &emission) const override;
 };
 
 #endif //PATHTRACED_RENDERER_METAL_H
